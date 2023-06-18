@@ -1,0 +1,12 @@
+# Directories
+.history/
+node_modules/
+
+# Files
+.env
+combined.log
+error.log
+package-lock.json
+
+# IDE/Editor specific
+.vscode/
