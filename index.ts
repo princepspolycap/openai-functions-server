@@ -40,6 +40,7 @@ function get_current_weather(location: any, unit = "fahrenheit") {
 app.post('/api/function', async (req, res) => {
     const messages = req.body.messages;
     const functions = req.body.functions;
+    logger.info(`First request: ${JSON.stringify(req.body, null, 2)}`);
 
     try {
         logger.info('Sending request to OpenAI Function API...');
@@ -53,6 +54,7 @@ app.post('/api/function', async (req, res) => {
                 'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
             }
         });
+        logger.info(`First response received: ${JSON.stringify(response.data, null, 2)}`);
 
         const response_message = response.data.choices[0].message;
 
@@ -79,7 +81,8 @@ app.post('/api/function', async (req, res) => {
                 "content": function_response,
             });
 
-            logger.info('Sending second request to OpenAI Function API...');
+            logger.info(`Sending second request to OpenAI Function API: ${JSON.stringify(messages, null, 2)}`);
+
             response = await axios.post('https://api.openai.com/v1/chat/completions', {
                 model: 'gpt-4-0613',
                 messages: messages,
@@ -89,6 +92,7 @@ app.post('/api/function', async (req, res) => {
                 }
             });
         }
+        logger.info(`Second response received: ${JSON.stringify(response.data, null, 2)}`);
 
         res.json(response.data);
     } catch (error: any) {

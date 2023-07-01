@@ -46,6 +46,7 @@ function get_current_weather(location, unit = "fahrenheit") {
 app.post('/api/function', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const messages = req.body.messages;
     const functions = req.body.functions;
+    logger.info(`First request: ${JSON.stringify(req.body, null, 2)}`);
     try {
         logger.info('Sending request to OpenAI Function API...');
         let response = yield axios_1.default.post('https://api.openai.com/v1/chat/completions', {
@@ -58,6 +59,7 @@ app.post('/api/function', (req, res) => __awaiter(void 0, void 0, void 0, functi
                 'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
             }
         });
+        logger.info(`First response received: ${JSON.stringify(response.data, null, 2)}`);
         const response_message = response.data.choices[0].message;
         if (response_message.function_call) {
             const available_functions = {
@@ -77,7 +79,7 @@ app.post('/api/function', (req, res) => __awaiter(void 0, void 0, void 0, functi
                 "name": function_name,
                 "content": function_response,
             });
-            logger.info('Sending second request to OpenAI Function API...');
+            logger.info(`Sending second request to OpenAI Function API: ${JSON.stringify(messages, null, 2)}`);
             response = yield axios_1.default.post('https://api.openai.com/v1/chat/completions', {
                 model: 'gpt-4-0613',
                 messages: messages,
@@ -87,6 +89,7 @@ app.post('/api/function', (req, res) => __awaiter(void 0, void 0, void 0, functi
                 }
             });
         }
+        logger.info(`Second response received: ${JSON.stringify(response.data, null, 2)}`);
         res.json(response.data);
     }
     catch (error) {
